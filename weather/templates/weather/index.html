@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'weather/style.css' %}" />
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var cityInput = document.getElementById("searchCity");
+
+        cityInput.addEventListener("keyup", function (event) {
+          if (event.key === "Enter") {
+            var cityInputValue = cityInput.value;
+
+            if (cityInputValue != "") {
+              fetch(`weather/${cityInputValue}`)
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.message != "city not found" && data.cod != "404") {
+                    document.getElementById("locationName").innerHTML =
+                      data.location;
+                    document.getElementById("temperatureValue").innerHTML =
+                      data.temperature + "<sup>o</sup>C";
+                    document.getElementById("weatherType").innerHTML =
+                      data.weatherType;
+                    document.getElementById(
+                      "realFeelAdditionalValue"
+                    ).innerHTML = data.realFeel + "<sup>o</sup>C";
+                    document.getElementById(
+                      "windSpeedAdditionalValue"
+                    ).innerHTML = data.windSpeed + " km/h";
+                    document.getElementById(
+                      "windDirectionAdditionalValue"
+                    ).innerHTML = data.windDirection;
+                    document.getElementById(
+                      "visibilityAdditionalValue"
+                    ).innerHTML = data.visibility + " km";
+                    document.getElementById(
+                      "pressureAdditionalValue"
+                    ).innerHTML = data.pressure;
+                    document.getElementById(
+                      "maxTemperatureAdditionalValue"
+                    ).innerHTML = data.maxTemperature + "<sup>o</sup>C";
+                    document.getElementById(
+                      "minTemperatureAdditionalValue"
+                    ).innerHTML = data.minTemperature + "<sup>o</sup>C";
+                    document.getElementById(
+                      "humidityAdditionalValue"
+                    ).innerHTML = data.humidity;
+                    document.getElementById(
+                      "sunriseAdditionalValue"
+                    ).innerHTML = data.sunrise;
+                    document.getElementById("sunsetAdditionalValue").innerHTML =
+                      data.sunset;
+                  } else {
+                    document.getElementById("locationName").innerHTML =
+                      "City Not Found";
+                    document.getElementById("temperatureValue").innerHTML = "";
+                    document.getElementById("weatherType").innerHTML = "";
+                  }
+                });
+            } else {
+              document.getElementById("locationName").innerHTML =
+                "Enter a city name...";
+            }
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">Weather App</a>
+        <ul class="navbar-nav">
+          <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+          <li class="nav-item">
+            <a href="/about" class="nav-link">About</a>
+          </li>
+          <li class="nav-item">
+            <a href="/hourly" class="nav-link">Hourly Weather Data</a>
+          </li>
+          <li class="nav-item">
+            <a href="/weather-map" class="nav-link">Rain Map</a>
+          </li>
+          <li class="nav-item">
+            <a href="/weather-heatmap" class="nav-link">Heatmap</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="main-content">
+        <h1>Weather Dashboard</h1>
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="searchCity"
+            placeholder="Enter city name"
+            class="input-field"
+          />
+        </div>
+        <div class="info-grid">
+          <div class="info-box">
+            <div class="info-content">
+              <h2>Location :</h2>
+              <div id="locationName"></div>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-content">
+              <h2>Temperature :</h2>
+              <div id="temperatureValue"></div>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-content">
+              <h2>Weather Type :</h2>
+              <div id="weatherType"></div>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-content">
+              <h2>Real Feel :</h2>
+              <div id="realFeelAdditionalValue"></div>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-content">
+              <h2>Wind Speed :</h2>
+              <div id="windSpeedAdditionalValue"></div>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-content">
+              <h2>Wind Direction :</h2>
+              <div id="windDirectionAdditionalValue"></div>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-content">
+              <h2>Visibility :</h2>
+              <div id="visibilityAdditionalValue"></div>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-content">
+              <h2>Pressure :</h2>
+              <div id="pressureAdditionalValue"></div>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-content">
+              <h2>Max Temperature :</h2>
+              <div id="maxTemperatureAdditionalValue"></div>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-content">
+              <h2>Min Temperature :</h2>
+              <div id="minTemperatureAdditionalValue"></div>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-content">
+              <h2>Humidity :</h2>
+              <div id="humidityAdditionalValue"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

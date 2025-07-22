@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+    />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'weather/heatmap.css' %}" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">Weather App</a>
+        <ul class="navbar-nav">
+          <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+          <li class="nav-item">
+            <a href="/about" class="nav-link">About</a>
+          </li>
+          <li class="nav-item">
+            <a href="/hourly" class="nav-link">Hourly Weather Data</a>
+          </li>
+          <li class="nav-item">
+            <a href="/weather-map" class="nav-link">Rain Map</a>
+          </li>
+          <li class="nav-item">
+            <a href="/weather-heatmap" class="nav-link">Heatmap</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="box">
+      <iframe
+        src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°C&metricWind=km/h&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=9.102&lon=77.344&detailLat=12.979&detailLon=77.364&detail=true&pressure=true&message=true"
+        frameborder="0"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </body>
+</html>

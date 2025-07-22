@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RainViewer API Example</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <link
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'weather/map.css' %}" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">Weather App</a>
+        <ul class="navbar-nav">
+          <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+          <li class="nav-item">
+            <a href="/about" class="nav-link">About</a>
+          </li>
+          <li class="nav-item">
+            <a href="/hourly" class="nav-link">Hourly Weather Data</a>
+          </li>
+          <li class="nav-item">
+            <a href="/weather-map" class="nav-link">Rain Map</a>
+          </li>
+          <li class="nav-item">
+            <a href="/weather-heatmap" class="nav-link">Heatmap</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="header">
+        <ul class="controls">
+          <li>
+            <input
+              type="radio"
+              name="kind"
+              checked="checked"
+              onchange="setKind('radar')"
+            />Radar (Past + Future)
+            <input
+              type="radio"
+              name="kind"
+              onchange="setKind('satellite')"
+            />Infrared Satellite
+          </li>
+          <li>
+            <input
+              type="button"
+              onclick="stop(); showFrame(animationPosition - 1); return;"
+              value="&lt;"
+            />
+          </li>
+          <li>
+            <input type="button" onclick="playStop();" value="Play / Stop" />
+          </li>
+          <li>
+            <input
+              type="button"
+              onclick="stop(); showFrame(animationPosition + 1); return;"
+              value="&gt;"
+            />
+          </li>
+          <li>
+            <select id="colors" onchange="setColors(); return;">
+              <option value="0">Black and White Values</option>
+              <option value="1">Original</option>
+              <option value="2" selected="selected">Universal Blue</option>
+              <option value="3">TITAN</option>
+              <option value="4">The Weather Channel</option>
+              <option value="5">Meteored</option>
+              <option value="6">NEXRAD Level-III</option>
+              <option value="7">RAINBOW @ SELEX-SI</option>
+              <option value="8">Dark Sky</option>
+            </select>
+          </li>
+        </ul>
+        <div id="timestamp" class="timestamp">FRAME TIME</div>
+      </div>
+
+      <div class="map-container">
+        <div id="mapid"></div>
+        <div class="sidebar">
+          <div class="description">
+            <h3>Functionality Descriptions</h3>
+            <p>
+              <strong>Radar (Past + Future):</strong> Display radar data showing
+              past and future precipitation.
+            </p>
+            <p>
+              <strong>Infrared Satellite:</strong> Show infrared satellite
+              images for weather observation.
+            </p>
+            <p>
+              <strong>Play / Stop:</strong> Start or stop the animation of
+              radar/satellite images.
+            </p>
+            <p>
+              <strong>Color Schemes:</strong> Choose from various color schemes
+              to display radar data.
+            </p>
+            <p>
+              <strong>Navigation:</strong> Use the left and right arrows or
+              arrow keys to navigate between frames.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var map = L.map("mapid").setView([12.9716, 77.5946], 8);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attributions:
+          'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      var apiData = {};
+      var mapFrames = [];
+      var lastPastFramePosition = -1;
+      var radarLayers = [];
+
+      var optionKind = "radar";
+      var optionTileSize = 256; 
+      var optionColorScheme = 2; 
+      var optionSmoothData = 1; 
+      var optionSnowColors = 1; 
+
+      var animationPosition = 0;
+      var animationTimer = false;
+
+      var loadingTilesCount = 0;
+      var loadedTilesCount = 0;
+
+      function startLoadingTile() {
+        loadingTilesCount++;
+      }
+      function finishLoadingTile() {
+        setTimeout(function () {
+          loadedTilesCount++;
+        }, 250);
+      }
+      function isTilesLoading() {
+        return loadingTilesCount > loadedTilesCount;
+      }
+
+      var apiRequest = new XMLHttpRequest();
+      apiRequest.open(
+        "GET",
+        "https://api.rainviewer.com/public/weather-maps.json",
+        true
+      );
+      apiRequest.onload = function (e) {
+        apiData = JSON.parse(apiRequest.response);
+        initialize(apiData, optionKind);
+      };
+      apiRequest.send();
+
+      function initialize(api, kind) {
+        for (var i in radarLayers) {
+          map.removeLayer(radarLayers[i]);
+        }
+        mapFrames = [];
+        radarLayers = [];
+        animationPosition = 0;
+
+        if (!api) {
+          return;
+        }
+        if (kind == "satellite" && api.satellite && api.satellite.infrared) {
+          mapFrames = api.satellite.infrared;
+          lastPastFramePosition = api.satellite.infrared.length - 1;
+          showFrame(lastPastFramePosition, true);
+        } else if (api.radar && api.radar.past) {
+          mapFrames = api.radar.past;
+          if (api.radar.nowcast) {
+            mapFrames = mapFrames.concat(api.radar.nowcast);
+          }
+          lastPastFramePosition = api.radar.past.length - 1;
+          showFrame(lastPastFramePosition, true);
+        }
+      }
+
+      function addLayer(frame) {
+        if (!radarLayers[frame.path]) {
+          var colorScheme = optionKind == "satellite" ? 0 : optionColorScheme;
+          var smooth = optionKind == "satellite" ? 0 : optionSmoothData;
+          var snow = optionKind == "satellite" ? 0 : optionSnowColors;
+
+          var source = new L.TileLayer(
+            apiData.host +
+              frame.path +
+              "/" +
+              optionTileSize +
+              "/{z}/{x}/{y}/" +
+              colorScheme +
+              "/" +
+              smooth +
+              "_" +
+              snow +
+              ".png",
+            {
+              tileSize: 256,
+              opacity: 0.01,
+              zIndex: frame.time,
+            }
+          );
+
+          source.on("loading", startLoadingTile);
+          source.on("load", finishLoadingTile);
+          source.on("remove", finishLoadingTile);
+
+          radarLayers[frame.path] = source;
+        }
+        if (!map.hasLayer(radarLayers[frame.path])) {
+          map.addLayer(radarLayers[frame.path]);
+        }
+      }
+
+      function changeRadarPosition(position, preloadOnly, force) {
+        while (position >= mapFrames.length) {
+          position -= mapFrames.length;
+        }
+        while (position < 0) {
+          position += mapFrames.length;
+        }
+
+        var currentFrame = mapFrames[animationPosition];
+        var nextFrame = mapFrames[position];
+
+        addLayer(nextFrame);
+
+        if (preloadOnly || (isTilesLoading() && !force)) {
+          return;
+        }
+
+        animationPosition = position;
+
+        if (radarLayers[currentFrame.path]) {
+          radarLayers[currentFrame.path].setOpacity(0);
+        }
+        radarLayers[nextFrame.path].setOpacity(100);
+
+        var pastOrForecast =
+          nextFrame.time > Date.now() / 1000 ? "FORECAST" : "PAST";
+
+        document.getElementById("timestamp").innerHTML =
+          pastOrForecast + ": " + new Date(nextFrame.time * 1000).toString();
+      }
+
+      function showFrame(nextPosition, force) {
+        var preloadingDirection = nextPosition - animationPosition > 0 ? 1 : -1;
+        changeRadarPosition(nextPosition, false, force);
+        changeRadarPosition(nextPosition + preloadingDirection, true);
+      }
+
+      function stop() {
+        if (animationTimer) {
+          clearTimeout(animationTimer);
+          animationTimer = false;
+          return true;
+        }
+        return false;
+      }
+
+      function play() {
+        showFrame(animationPosition + 1);
+        animationTimer = setTimeout(play, 500);
+      }
+
+      function playStop() {
+        if (!stop()) {
+          play();
+        }
+      }
+
+      function setKind(kind) {
+        optionKind = kind;
+        initialize(apiData, optionKind);
+      }
+
+      function setColors() {
+        var e = document.getElementById("colors");
+        optionColorScheme = e.options[e.selectedIndex].value;
+        initialize(apiData, optionKind);
+      }
+
+      document.onkeydown = function (e) {
+        e = e || window.event;
+        switch (e.which || e.keyCode) {
+          case 37: // left
+            stop();
+            showFrame(animationPosition - 1, true);
+            break;
+
+          case 39: // right
+            stop();
+            showFrame(animationPosition + 1, true);
+            break;
+
+          default:
+            return;
+        }
+        e.preventDefault();
+        return false;
+      };
+    </script>
+  </body>
+</html>

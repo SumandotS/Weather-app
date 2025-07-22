@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hourly Weather Forecast</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'weather/hourly.css' %}" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">Weather App</a>
+        <ul class="navbar-nav">
+          <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+          <li class="nav-item">
+            <a href="/about" class="nav-link">About</a>
+          </li>
+          <li class="nav-item">
+            <a href="/hourly" class="nav-link">Hourly Weather Data</a>
+          </li>
+          <li class="nav-item">
+            <a href="/weather-map" class="nav-link">Rain Map</a>
+          </li>
+          <li class="nav-item">
+            <a href="/weather-heatmap" class="nav-link">Heatmap</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container">
+      <h1>Hourly Weather Forecast</h1>
+
+      <form action="{% url 'hourly_view' %}" method="post">
+        {% csrf_token %} {{ form }}
+        <button type="submit">Get Weather</button>
+      </form>
+
+      <div class="weather-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Temperature (°C)</th>
+              <th>Humidity (%)</th>
+              <th>Precipitation Probability (%)</th>
+              <th>Rain (mm)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for weather in weather_list %}
+            <tr>
+              <td>{{ weather.time }}</td>
+              <td>{{ weather.temperature }}</td>
+              <td>{{ weather.humidity }}</td>
+              <td>{{ weather.precipitation_probability }}</td>
+              <td>{{ weather.rain }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

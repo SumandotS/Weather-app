@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About WeatherApp</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Helvetica:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'weather/about.css' %}" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="/" class="navbar-brand">Weather App</a>
+        <ul class="navbar-nav">
+          <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+          <li class="nav-item">
+            <a href="/about" class="nav-link">About</a>
+          </li>
+          <li class="nav-item">
+            <a href="/hourly" class="nav-link">Hourly Weather Data</a>
+          </li>
+          <li class="nav-item">
+            <a href="/weather-map" class="nav-link">Rain Map</a>
+          </li>
+          <li class="nav-item">
+            <a href="/weather-heatmap" class="nav-link">Heatmap</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <header>
+      <div class="container">
+        <div class="flex items-center gap-4 mb-8">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="h-14 w-14 text-white"
+          >
+            <path
+              d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"
+            ></path>
+          </svg>
+          <h1>WeatherApp</h1>
+        </div>
+        <p>
+          Discover the weather forecast for your location with our intuitive and
+          feature-rich weather application.
+        </p>
+      </div>
+    </header>
+    <main>
+      <section>
+        <div class="container">
+          <div class="grid md:grid-cols-2 gap-12 md:gap-16">
+            <div>
+              <h2>About WeatherApp</h2>
+              <p>
+                Founded in 2024, WeatherApp is committed to delivering accurate
+                and up-to-date weather information to users worldwide. Our
+                mission is to empower you with reliable weather data, enabling
+                you to plan your day and prepare for any weather conditions. We
+                harness cutting-edge technology to ensure our platform remains
+                the most trusted source for weather updates.
+              </p>
+            </div>
+            <div>
+              <h2>Our Team</h2>
+              <p>
+                Our team comprises passionate individuals dedicated to creating
+                the best weather app on the market. From developers to
+                meteorologists, each team member plays a crucial role in
+                ensuring that WeatherApp delivers unparalleled service and
+                innovation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="features bg-muted">
+        <div class="container">
+          <div class="grid md:grid-cols-2 gap-12 md:gap-16">
+            <div>
+              <h2>Technology</h2>
+              <ul>
+                <li>
+                  <p>
+                    OpenWeatherMap: We integrate OpenWeatherMap's comprehensive
+                    data to deliver accurate and timely weather updates.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    Geopy: Our interactive maps are powered by Geopy, allowing
+                    you to visualize weather conditions across different regions
+                    with ease.
+                  </p>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h2>Features</h2>
+              <ul>
+                <li>
+                  <h3>Real-time Weather Updates</h3>
+                  <p>
+                    Stay informed with the latest weather conditions, including
+                    temperature, precipitation, and wind speed, for your current
+                    location or any city worldwide.
+                  </p>
+                </li>
+                <li>
+                  <h3>Detailed Forecasts</h3>
+                  <p>
+                    View hourly forecasts to plan your activities with
+                    confidence.
+                  </p>
+                </li>
+                <li>
+                  <h3>Rain Map</h3>
+                  <p>
+                    An interactive map displaying rain forecasts to help you
+                    avoid unexpected downpours.
+                  </p>
+                </li>
+                <li>
+                  <h3>Heat Map</h3>
+                  <p>
+                    Explore global weather conditions with our interactive heat
+                    map, providing insights into temperature variations and
+                    extreme weather events.
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <div class="container">
+        <p>© 2024 WeatherApp. All rights reserved.</p>
+        <nav>
+          <a href="#" rel="ugc">Privacy Policy</a>
+          <a href="#" rel="ugc">Terms of Service</a>
+          <a href="#" rel="ugc">Contact Us</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
